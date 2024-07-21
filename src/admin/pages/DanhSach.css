@@ -1,0 +1,23 @@
+
+.table-container {
+    margin-top: 50px;
+  }
+  
+  .table-actions {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .table-actions button {
+    margin-right: 5px;
+  }
+  
+  .table img {
+    width: 100px;
+    height: auto;
+  }
+  
+  .modal-form-group {
+    margin-bottom: 15px;
+  }
+  

@@ -1,0 +1,51 @@
+.sticky-top {
+  background-color: #90bc79; /* Màu xanh lam */
+}
+
+.navbar-brand h2 {
+  margin: 0;
+  color: #fff;
+}
+
+.nav-item.nav-link.active,
+.nav-item.nav-link.text-white:hover,
+.nav-item.nav-link.text-white:focus {
+  color: #fff; /* Màu trắng cho liên kết khi được chọn hoặc hover */
+}
+
+.navbar-toggler {
+  border: none;
+}
+
+.dropdown-menu {
+  background-color: #f8f9fa; /* Màu nền của dropdown */
+}
+
+.btn-dark {
+  background-color: #000;
+  border: none;
+}
+
+.container-fluid {
+  padding: 0;
+}
+
+.navbar-collapse {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar-collapse .nav-item {
+  margin-right: 15px;
+}
+
+.navbar-collapse .nav-item:last-child {
+  margin-right: 0;
+}
+
+@media (max-width: 992px) {
+  .navbar-collapse .nav-item {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
