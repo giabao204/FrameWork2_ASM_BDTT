@@ -10,8 +10,8 @@ const Header = () => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
           <Nav.Link as={NavLink} to="/admin/dashboard">Dashboard</Nav.Link>
-          <Nav.Link as={NavLink} to="/admin/User">Người dùng</Nav.Link>
-          <Nav.Link as={NavLink} to="/admin/danhsach">Danh Sách</Nav.Link>
+          <Nav.Link as={NavLink} to="/admin/user">Người dùng</Nav.Link>
+          <Nav.Link as={NavLink} to="/admin/product">Danh sách sản phẩm</Nav.Link>
           <Nav.Link as={NavLink} to="/admin/billing">Billing</Nav.Link>
         </Nav>
         <Form className="d-flex mx-auto" style={{ width: '300px' }}>
