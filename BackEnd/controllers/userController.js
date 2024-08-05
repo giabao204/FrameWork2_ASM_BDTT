@@ -39,6 +39,32 @@ const loginUser = async (req, res) => {
     }
 };
 
+const createUser = async (req, res) => {
+    try {
+        console.log('Request Body:', req.body); // Ghi log dữ liệu đầu vào
+        const { username  } = req.body;
+        const { password } = req.body;
+        const { email  } = req.body;
+        const { role } = req.body;
+        if (!username) {
+            return res.status(400).json({ error: 'User username is required' });
+        }
+        if (!password) {
+            return res.status(400).json({ error: 'User password is required' });
+        }
+        if (!email) {
+            return res.status(400).json({ error: 'User email is required' });
+        }
+        if (!role) {
+            return res.status(400).json({ error: 'User role is required' });
+        }
+        const user = await User.create({ username, password, email, role});
+        res.status(201).json(user);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
 // Lấy thông tin người dùng từ token
 const getUser = async (req, res) => {
     try {
@@ -100,4 +126,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, getUser, updateUser, deleteUser, getAllUsers };
+module.exports = { registerUser, loginUser, getUser, updateUser, deleteUser, getAllUsers,createUser };
