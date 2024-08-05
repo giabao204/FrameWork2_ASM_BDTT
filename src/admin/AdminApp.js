@@ -8,6 +8,7 @@ import './Admin.css';
 import DanhSach from './pages/DanhSach';
 import { getUser } from '../services/Auth';
 import { useCookies } from 'react-cookie';
+import Category from './pages/Category/index';
 
 const AdminApp = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['token', 'role']);
@@ -48,6 +49,7 @@ const AdminApp = () => {
                         <Route path="/" element={<Navigate to="dashboard" />} />
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="danhsach" element={<DanhSach />} />
+                        <Route path="category" element={<Category />} />
                         {/* Các route khác */}
                     </Routes>
                 </div>
