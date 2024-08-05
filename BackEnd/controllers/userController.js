@@ -69,8 +69,13 @@ const updateUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
+
+        // Mã hóa mật khẩu nếu mật khẩu mới được cung cấp
+        if (password) {
+            user.password = await bcrypt.hash(password, 10);
+        }
+
         user.username = username || user.username;
-        user.password = password || user.password;
         user.email = email || user.email;
         user.role = role || user.role;
         await user.save();
@@ -79,6 +84,7 @@ const updateUser = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Xóa người dùng
 const deleteUser = async (req, res) => {
