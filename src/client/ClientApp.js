@@ -10,6 +10,7 @@ import ContactPage from './pages/ContactPage';
 import Login from './components/Login/index';
 import Register from './components/Register/index';
 import Cart from './pages/Cart';
+import Profile from "./pages/Profile";
 
 const ClientApp = () => {
   return (
@@ -25,6 +26,7 @@ const ClientApp = () => {
           <Route path="/news" element={<NewsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
       <ClientFooter />

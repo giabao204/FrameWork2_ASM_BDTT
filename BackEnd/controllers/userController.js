@@ -1,8 +1,8 @@
-// controllers/userController.js
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const { generateToken } = require('./auth');
 
+// Đăng ký người dùng mới
 const registerUser = async (req, res) => {
     try {
         const { username, password, email, role } = req.body;
@@ -20,6 +20,7 @@ const registerUser = async (req, res) => {
     }
 };
 
+// Đăng nhập người dùng
 const loginUser = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -38,4 +39,59 @@ const loginUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser };
+// Lấy thông tin người dùng từ token
+const getUser = async (req, res) => {
+    try {
+        const user = await User.findByPk(req.userId); // Assuming userId is stored in the JWT
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.findAll();
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+// Cập nhật thông tin người dùng
+const updateUser = async (req, res) => {
+    try {
+        const { username, password, email, role } = req.body;
+        const user = await User.findByPk(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        user.username = username || user.username;
+        user.password = password || user.password;
+        user.email = email || user.email;
+        user.role = role || user.role;
+        await user.save();
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+// Xóa người dùng
+const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findByPk(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        await user.destroy();
+        res.status(200).json({ message: 'User deleted' });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+module.exports = { registerUser, loginUser, getUser, updateUser, deleteUser, getAllUsers };
