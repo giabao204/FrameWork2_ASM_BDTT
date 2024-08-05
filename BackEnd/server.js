@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Import cors
-const { registerUser, loginUser, getUser, updateUser, deleteUser, getAllUsers } = require('./controllers/userController');
+const { registerUser, loginUser, getUser, updateUser, deleteUser, getAllUsers,createUser } = require('./controllers/userController');
 const {
     createProduct,
     getAllProducts,
@@ -33,6 +33,8 @@ app.use(bodyParser.json({ limit: '50mb' })); // Tăng giới hạn kích thướ
 // User routes
 app.post('/api/register', registerUser);
 app.post('/api/login', loginUser);
+
+app.post('/api/users',authenticate, createUser);
 app.get('/api/users', authenticate, getAllUsers);
 app.get('/api/users/:id', authenticate, getUser);
 app.put('/api/users/:id', authenticate, updateUser);

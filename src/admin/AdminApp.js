@@ -9,6 +9,7 @@ import DanhSach from './pages/DanhSach';
 import { getUser } from '../services/Auth';
 import { useCookies } from 'react-cookie';
 import Category from './pages/Category/index';
+import User from './pages/User/index';
 import Product from "./pages/Product/index";
 
 const AdminApp = () => {
@@ -51,6 +52,7 @@ const AdminApp = () => {
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="product" element={<Product />} />
                         <Route path="category" element={<Category />} />
+                        <Route path="user" element={<User/>} />
                         {/* Các route khác */}
                     </Routes>
                 </div>
