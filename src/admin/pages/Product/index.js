@@ -162,7 +162,7 @@ const Product = () => {
                         <td>{value.content}</td>
                         <td>{value.price}</td>
                         <td>
-                            <img src={`${BASE_URL}${value?.image}`} style={{ width: '100px'}} />
+                            <img src={`${BASE_URL}${value?.image}`} alt={value.name} style={{ width: '100px'}} />
                         </td>
                         <td>
                             <Button variant="warning" onClick={() => handleEditProduct(value)} className="me-2">
@@ -264,7 +264,7 @@ const Product = () => {
                                 {errors.price?.message}
                             </Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group controlId="formProductImage" className="modal-form-group">
+                        <Form.Group controlId="formProductImage" className="modal-form-group" encType="multipart/form-data">
                             <Form.Label>Hình Ảnh</Form.Label>
                             <Controller
                                 name="image"
