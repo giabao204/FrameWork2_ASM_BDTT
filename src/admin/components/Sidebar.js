@@ -29,8 +29,8 @@ const Sidebar = () => {
           <Nav.Link as={NavLink} to="/admin/category" className="sidebar-link" activeClassName="active-link">
             <FontAwesomeIcon icon={faList} className="me-2" /> Loại sản phẩm
           </Nav.Link>
-          <Nav.Link as={NavLink} to="/admin/danhsach" className="sidebar-link" activeClassName="active-link">
-            <FontAwesomeIcon icon={faList} className="me-2" /> Danh Sách
+          <Nav.Link as={NavLink} to="/admin/product" className="sidebar-link" activeClassName="active-link">
+            <FontAwesomeIcon icon={faList} className="me-2" /> Danh sách sản phẩm
           </Nav.Link>
           <Nav.Link as={NavLink} to="/admin/billing" className="sidebar-link" activeClassName="active-link">
             <FontAwesomeIcon icon={faFileInvoiceDollar} className="me-2" /> Billing

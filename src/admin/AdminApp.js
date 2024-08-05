@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -9,6 +9,7 @@ import DanhSach from './pages/DanhSach';
 import { getUser } from '../services/Auth';
 import { useCookies } from 'react-cookie';
 import Category from './pages/Category/index';
+import Product from "./pages/Product/index";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -57,15 +58,16 @@ const AdminApp = () => {
                     <Routes>
                         <Route path="/" element={<Navigate to="dashboard" />} />
                         <Route path="dashboard" element={<Dashboard />} />
-                        <Route path="danhsach" element={<DanhSach />} />
+                        <Route path="product" element={<Product />} />
                         <Route path="category" element={<Category />} />
                         {/* Các route khác */}
                     </Routes>
                 </div>
                 <Footer />
             </div>
-            <ToastContainer />
         </div>
+    ) : (
+        <Navigate to="/login" />
     );
 };
 
