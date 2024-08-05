@@ -2,7 +2,7 @@
 const { Sequelize } = require('sequelize');
 
 // Cấu hình kết nối đến cơ sở dữ liệu PostgreSQL
-const sequelize = new Sequelize('reactjs', 'root', 'mysql', {
+const sequelize = new Sequelize('reactjs', 'root', 'root', {
     host: 'localhost',
     dialect: 'mysql'
 });

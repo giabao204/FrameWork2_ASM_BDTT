@@ -1,27 +1,38 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { useForm } from 'react-hook-form';
+import { Form, Button, Container, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { login } from '../../../services/Auth';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const [cookies, setCookie] = useCookies(['token']);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
+    const loadingToast = toast.loading("Đang xử lý đăng nhập...");
 
     try {
-      const response = await login({ username, password });
+      const response = await login(data);
       if (response.token) {
-        alert("Đăng nhập thành công");
+        toast.dismiss(loadingToast);
+        setIsLoading(true);
+        localStorage.setItem('loginMessage', 'Đăng nhập thành công!');
         setCookie('token', response.token, { path: '/' });
-        navigate('/profile'); // Điều hướng tới trang profile sau khi đăng nhập thành công
+
+        setTimeout(() => {
+          setIsLoading(false);
+          toast.success('Đăng nhập thành công!');
+          navigate('/profile'); // Điều hướng tới trang profile sau khi đăng nhập thành công
+        }, 2000);
       }
     } catch (error) {
-      alert("Đăng nhập thất bại");
+      toast.dismiss(loadingToast);
+      toast.error("Đăng nhập thất bại!");
     }
   };
 
@@ -31,15 +42,15 @@ const Login = () => {
           <Col md={6} lg={4} className="mx-auto">
             <div className="bg-white p-4 rounded shadow-sm">
               <h2 className="text-center text-success mb-4">Đăng Nhập</h2>
-              <Form onSubmit={handleLogin}>
+              <Form onSubmit={handleSubmit(onSubmit)}>
                 <Form.Group controlId="formBasicUsername" className="mb-3">
                   <Form.Label>Tên Tài Khoản</Form.Label>
                   <Form.Control
                       type="text"
                       placeholder="Nhập tên tài khoản"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      {...register('username', { required: true })}
                   />
+                  {errors.username && <p className="text-danger">Tên tài khoản là bắt buộc</p>}
                 </Form.Group>
 
                 <Form.Group controlId="formBasicPassword" className="mb-3">
@@ -47,13 +58,13 @@ const Login = () => {
                   <Form.Control
                       type="password"
                       placeholder="Nhập mật khẩu"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      {...register('password', { required: true })}
                   />
+                  {errors.password && <p className="text-danger">Mật khẩu là bắt buộc</p>}
                 </Form.Group>
 
                 <Button variant="success" type="submit" className="w-100">
-                  Đăng Nhập
+                  {isLoading ? <Spinner animation="border" size="sm" /> : 'Đăng Nhập'}
                 </Button>
                 <div className="mt-3 text-center">
                   <Link to="/register">Chưa có tài khoản? Đăng ký ngay</Link>
@@ -62,6 +73,7 @@ const Login = () => {
             </div>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
   );
 };

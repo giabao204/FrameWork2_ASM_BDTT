@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -9,10 +9,13 @@ import DanhSach from './pages/DanhSach';
 import { getUser } from '../services/Auth';
 import { useCookies } from 'react-cookie';
 import Category from './pages/Category/index';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminApp = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['token', 'role']);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -39,7 +42,13 @@ const AdminApp = () => {
         return <div>Loading...</div>; // Hoặc một spinner nào đó để hiển thị trong khi chờ đợi
     }
 
-    return cookies?.token && cookies?.role === 'admin' ? (
+    if (!cookies?.token || cookies?.role !== 'admin') {
+        localStorage.setItem('adminAccessError', 'Bạn không có quyền truy cập trang này!');
+        navigate('/');
+        return null;
+    }
+
+    return (
         <div className="d-flex" id="wrapper">
             <Sidebar />
             <div id="page-content-wrapper">
@@ -55,9 +64,8 @@ const AdminApp = () => {
                 </div>
                 <Footer />
             </div>
+            <ToastContainer />
         </div>
-    ) : (
-        <Navigate to="/login" />
     );
 };
 

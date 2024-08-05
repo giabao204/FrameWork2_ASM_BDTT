@@ -1,32 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../../../services/Auth';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Register = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const { register: registerInput, handleSubmit, watch, formState: { errors } } = useForm();
   const navigate = useNavigate();
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Mật khẩu không khớp");
-      return;
-    }
-
+  const onSubmit = async (data) => {
     try {
-      const response = await register({ username, email, password });
+      const response = await register(data);
       if (response) {
-        alert("Đăng ký thành công");
-        navigate('/login');
+        toast.success("Đăng ký thành công!");
+        setTimeout(() => {
+          navigate('/login', { state: { message: 'Đăng ký thành công!' } });
+        }, 2000);
       }
     } catch (error) {
-      alert("Đăng ký thất bại");
+      toast.error("Đăng ký thất bại!");
     }
   };
+
+  const password = watch("password", "");
 
   return (
       <Container fluid className="d-flex justify-content-center align-items-center vh-100 bg-success bg-opacity-50">
@@ -34,15 +32,15 @@ const Register = () => {
           <Col md={6} lg={4} className="mx-auto">
             <div className="bg-white p-4 rounded shadow-sm">
               <h2 className="text-center text-success mb-4">Đăng Ký</h2>
-              <Form onSubmit={handleRegister}>
+              <Form onSubmit={handleSubmit(onSubmit)}>
                 <Form.Group controlId="formBasicUsername" className="mb-3">
                   <Form.Label>Tên Tài Khoản</Form.Label>
                   <Form.Control
                       type="text"
                       placeholder="Nhập tên tài khoản"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      {...registerInput('username', { required: "Tên tài khoản là bắt buộc" })}
                   />
+                  {errors.username && <p className="text-danger">{errors.username.message}</p>}
                 </Form.Group>
 
                 <Form.Group controlId="formBasicEmail" className="mb-3">
@@ -50,9 +48,15 @@ const Register = () => {
                   <Form.Control
                       type="email"
                       placeholder="Nhập email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      {...registerInput('email', {
+                        required: "Email là bắt buộc",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                          message: "Email không hợp lệ"
+                        }
+                      })}
                   />
+                  {errors.email && <p className="text-danger">{errors.email.message}</p>}
                 </Form.Group>
 
                 <Form.Group controlId="formBasicPassword" className="mb-3">
@@ -60,9 +64,9 @@ const Register = () => {
                   <Form.Control
                       type="password"
                       placeholder="Nhập mật khẩu"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      {...registerInput('password', { required: "Mật khẩu là bắt buộc" })}
                   />
+                  {errors.password && <p className="text-danger">{errors.password.message}</p>}
                 </Form.Group>
 
                 <Form.Group controlId="formBasicConfirmPassword" className="mb-3">
@@ -70,9 +74,12 @@ const Register = () => {
                   <Form.Control
                       type="password"
                       placeholder="Nhập lại mật khẩu"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      {...registerInput('confirmPassword', {
+                        required: "Xác nhận mật khẩu là bắt buộc",
+                        validate: value => value === password || "Mật khẩu không khớp"
+                      })}
                   />
+                  {errors.confirmPassword && <p className="text-danger">{errors.confirmPassword.message}</p>}
                 </Form.Group>
 
                 <Button variant="success" type="submit" className="w-100">
@@ -85,6 +92,7 @@ const Register = () => {
             </div>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
   );
 };
