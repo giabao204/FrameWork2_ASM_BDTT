@@ -35,8 +35,8 @@ const Sidebar = () => {
           <Nav.Link as={NavLink} to="/admin/user" className="sidebar-link">
             <FontAwesomeIcon icon={faList} className="me-2" /> Người dùng
           </Nav.Link>
-          <Nav.Link as={NavLink} to="/admin/danhsach" className="sidebar-link">
-            <FontAwesomeIcon icon={faList} className="me-2" /> Danh Sách
+          <Nav.Link as={NavLink} to="/admin/product" className="sidebar-link">
+            <FontAwesomeIcon icon={faList} className="me-2" /> Danh sách
           </Nav.Link>
           <Nav.Link as={NavLink} to="/admin/billing" className="sidebar-link" activeClassName="active-link">
             <FontAwesomeIcon icon={faFileInvoiceDollar} className="me-2" /> Billing
