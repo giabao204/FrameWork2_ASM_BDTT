@@ -7,7 +7,7 @@ export const convertFileToBase64 = (file) => {
     });
 };
 
-export const convertToJpg = (file) => {
+export const convertToJpg = (file, maxWidth = 800, maxHeight = 800) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -16,9 +16,24 @@ export const convertToJpg = (file) => {
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
+
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth || height > maxHeight) {
+                    if (width / height > maxWidth / maxHeight) {
+                        width = maxWidth;
+                        height = Math.round(maxWidth * (img.height / img.width));
+                    } else {
+                        height = maxHeight;
+                        width = Math.round(maxHeight * (img.width / img.height));
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
                 canvas.toBlob((blob) => {
                     resolve(blob);
                 }, 'image/jpeg'); // Chuyển đổi thành JPEG

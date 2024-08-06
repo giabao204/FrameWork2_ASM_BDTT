@@ -150,6 +150,25 @@ const Product = () => {
         }
     };
 
+    const truncate = (str, num) => {
+        if (str.length <= num) {
+            return str;
+        }
+        return str.slice(0, num) + '...';
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        const maxSize = 5 * 1024 * 1024; // Giới hạn 5MB
+
+        if (file.size > maxSize) {
+            setError('file', { type: 'manual', message: 'File quá lớn. Vui lòng chọn file nhỏ hơn 5MB.' });
+            return;
+        }
+
+        setValue('file', file);
+    };
+
     return (
         <div className="container table-container">
             <div className="table-actions">
@@ -183,7 +202,7 @@ const Product = () => {
                         <td>{index + 1}</td>
                         <td>{value.name}</td>
                         <td>{getCategoryNameById(value.cate_id)}</td>
-                        <td>{value.content}</td>
+                        <td>{truncate(value.content, 30)}</td>
                         <td>{value.price}đ</td>
                         <td>
                             <img src={value.image} alt={value.name} style={{width: '100px'}}/>
@@ -303,7 +322,7 @@ const Product = () => {
                                 render={({ field }) => (
                                     <Form.Control
                                         type="file"
-                                        onChange={(e) => field.onChange(e.target.files[0])}
+                                        onChange={(e) => handleFileChange(e)}
                                         isInvalid={!!errors.file}
                                     />
                                 )}

@@ -70,7 +70,7 @@ const ProductDetail = () => {
                             src={product.image}
                             alt={product.name}
                             className="img-fluid rounded shadow"
-                            style={{maxHeight: '400px', objectFit: 'cover'}}
+                            style={{maxHeight: '400px', objectFit: 'cover', marginLeft: '80px'}}
                         />
                     ) : (
                         <div className="d-flex align-items-center justify-content-center"
@@ -80,27 +80,37 @@ const ProductDetail = () => {
                     )}
                 </div>
                 <div className="col-md-6">
-                    <div style={{marginLeft: '40px'}}>
-                        <h6 className="mb-3">{product.name}</h6>
-                        <h6 className="text-danger mb-3">{formatCurrency(product.price)}</h6>
-                        <div className="d-flex align-items-center mb-4">
-                            <button className="btn btn-outline-success me-0">-</button>
-                            <p className="mb-0" style={{width: '40px', textAlign: 'center'}}>0</p>
-                            <button className="btn btn-outline-success ms-0">+</button>
+                    <div style={{marginLeft: '40px', position: 'relative'}}>
+                        <div style={{position: 'absolute', top: '40px'}}>
+                            <h6 className="mb-3">{product.name}</h6>
+                            <h6 className="text-danger mb-3">{formatCurrency(product.price)}</h6>
                         </div>
-                        <button
-                            className="btn btn-outline-success"
-                            onClick={() => handleAddToCart(product.id)}
-                            style={{fontSize: '14px'}}
-                        >
-                            Add To Cart
-                        </button>
+                        <div style={{position: 'absolute', top: '250px'}}>
+                            <div className="d-flex align-items-center mb-4">
+                                <button className="btn btn-outline-success me-0">-</button>
+                                <p className="mb-0" style={{width: '40px', textAlign: 'center'}}>0</p>
+                                <button className="btn btn-outline-success ms-0">+</button>
+                            </div>
+                            <button
+                                className="btn btn-outline-success"
+                                onClick={() => handleAddToCart(product.id)}
+                                style={{fontSize: '14px'}}
+                            >
+                                Add To Cart
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="mt-5">
+            <div className="mt-5" style={{marginLeft: '80px'}}>
                 <h6 className="mb-3">Thông tin sản phẩm:</h6>
-                <p style={{fontSize: '14px'}}>{product.content}</p>
+                <p style={{
+                    fontSize: '14px',
+                    wordWrap: "break-word",
+                    overflowWrap: 'break-word',
+                    whiteSpace: 'pre-wrap',
+                    maxWidth: '90%'
+                }}>{product.content}</p>
             </div>
         </div>
     )

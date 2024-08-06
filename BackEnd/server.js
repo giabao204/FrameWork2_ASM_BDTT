@@ -27,7 +27,7 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json()); // Đối với JSON
-app.use(bodyParser.urlencoded({ extended: true })); // Đối với form-data
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true })); // Đối với form-data
 app.use(bodyParser.json({ limit: '50mb' })); // Tăng giới hạn kích thước để xử lý chuỗi Base64 lớn
 
 // User routes
