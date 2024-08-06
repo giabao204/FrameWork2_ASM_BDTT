@@ -18,6 +18,13 @@ const {
     updateCategoryById,
     deleteCategoryById
 } = require('./controllers/categoryController');
+const {
+    createOrder,
+    getAllOrders,
+    getOrder,
+    updateOrder,
+    deleteOrder
+} = require('./controllers/orderController');
 const {authenticate} = require('./controllers//auth');
 
 const app = express();
@@ -58,6 +65,14 @@ app.get('/api/categories', getAllCategories);
 app.get('/api/categories/:id', getCategoryById);
 app.put('/api/categories/:id', updateCategoryById);
 app.delete('/api/categories/:id', deleteCategoryById);
+
+
+// Order routes
+app.post('/api/orders', createOrder);
+app.get('/api/orders', getAllOrders);
+app.get('/api/orders/:id', getOrder);
+app.put('/api/orders/:id', updateOrder);
+app.delete('/api/orders/:id', deleteOrder);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

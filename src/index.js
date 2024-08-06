@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { CartProvider } from './client/components/Cart/index'; // Adjust the path if necessary
+import { CartProvider } from './client/components/Cart'; // Adjust the path if necessary
 import App from './App';
 import 'bootstrap/dist/css/bootstrap.min.css';
 

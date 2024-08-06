@@ -3,12 +3,14 @@ import { getProduct, getProductsByCategory } from '../../services/Product';
 import { getCategory } from '../../services/Category';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../components/Cart';
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const navigate = useNavigate();
+  const { addItemToCart } = useCart();
 
   useEffect(() => {
     fetchProducts();
@@ -53,12 +55,14 @@ const ProductsPage = () => {
     }).format(amount);
   };
 
-  const handleProductClick = (id) => {
-    navigate(`/products/${id}`);
-  };
-
-  const handleAddToCart = (id) => {
-    console.log(`Product with id ${id} added to cart`);
+  const handleAddToCart = (product) => {
+    try {
+      addItemToCart({ ...product, quantity: 1 });
+      toast.success('Thêm sản phẩm vào giỏ hàng thành công.');
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      toast.error('Error adding product to cart. Please try again later.');
+    }
   };
 
   return (
@@ -85,20 +89,20 @@ const ProductsPage = () => {
               </div>
             </div>
             <div className="row g-4">
-              {products.map((product) => (
-                  <div className="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s" key={product.id}>
+              {products.map((value) => (
+                  <div className="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s" key={value.id}>
                     <div className="product-item text-center border h-100 p-4">
-                      <Link to={`/products/${product.id}`}>
-                        <div style={{ height: '150px' }}>
-                          <img className="img-fluid mb-4 product-image" src={product.image} alt={product.name}
-                               style={{ width: '100%' }} />
+                      <Link to={`/products/${value.id}`}>
+                        <div style={{ height: '250px' }}>
+                          <img className="img-fluid mb-4 product-image" src={value.image} alt={value.name} style={{ width: '100%' }} />
                         </div>
                       </Link>
-                      <Link to={`/products/${product.id}`} className="h6 d-inline-block mb-2 text-decoration-none">
-                        {product.name}
+                      <Link to={`/products/${value.id}`} className="h6 d-inline-block mb-2 text-decoration-none">
+                        {value.name}
                       </Link>
-                      <h6 className="text-danger mb-3">{formatCurrency(product.price)}</h6>
-                      <a href="#" className="btn btn-outline-success px-3" style={{ fontSize: '14px' }} onClick={() => handleAddToCart(product.id)}>Add To Cart</a>
+                      <h6 className="text-danger mb-3">{formatCurrency(value.price)}</h6>
+                      <button className="btn btn-outline-success px-3" style={{ fontSize: '14px' }}
+                              onClick={() => handleAddToCart(value)}>Add To Cart</button>
                     </div>
                   </div>
               ))}
