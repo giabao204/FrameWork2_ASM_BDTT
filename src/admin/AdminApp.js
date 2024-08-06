@@ -11,6 +11,8 @@ import { useCookies } from 'react-cookie';
 import Category from './pages/Category/index';
 import User from './pages/User/index';
 import Product from "./pages/Product/index";
+import User from './pages/User/index';
+import Product from "./pages/Product/index";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
