@@ -12,6 +12,12 @@ const createProduct = async (req, res) => {
         let image = null;
 
         if (req.file) {
+            // Validate file type (example for images)
+            if (!req.file.mimetype.startsWith('image/')) {
+                return res.status(400).json({ error: 'Invalid file type. Only images are allowed.' });
+            }
+
+            // Convert file buffer to base64
             image = req.file.buffer.toString('base64');
         }
 
