@@ -28,7 +28,11 @@ const Product = () => {
     const fetchProducts = async () => {
         try {
             const result = await getProduct();
-            setProducts(result);
+            const productsWithImageURL = result.map(product => ({
+                ...product,
+                image: `data:image/jpeg;base64,${product.image}` // assuming the image is in jpeg format
+            }));
+            setProducts(productsWithImageURL);
         } catch (err) {
             console.error('Error fetching products:', err);
             toast.error('Error fetching products. Please try again later.');
@@ -162,7 +166,7 @@ const Product = () => {
                         <td>{value.content}</td>
                         <td>{value.price}</td>
                         <td>
-                            <img src={`${BASE_URL}${value?.image}`} alt={value.name} style={{ width: '100px'}} />
+                            <img src={value.image} alt={value.name} style={{width: '100px'}}/>
                         </td>
                         <td>
                             <Button variant="warning" onClick={() => handleEditProduct(value)} className="me-2">
