@@ -90,11 +90,25 @@ const deleteProductById = async (req, res) => {
     }
 };
 
+const getProductsByCategory = async (req, res) => {
+    try {
+        const { categoryId } = req.params;
+        const products = await Product.findAll({
+            where: { cate_id: categoryId },
+            include: Category
+        });
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 module.exports = {
     createProduct,
     getAllProducts,
     getProductById,
     updateProductById,
     deleteProductById,
+    getProductsByCategory,
     upload
 };
