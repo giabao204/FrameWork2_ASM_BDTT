@@ -7,6 +7,12 @@ export const getProduct = () => {
     });
 };
 
+export const getProductsByCategory = (categoryId) => {
+    return request({
+        method: 'GET',
+        path: `products/category/${categoryId}`
+    });
+};
 export const getOneProduct = (id) => {
     return request({
         method: 'GET',

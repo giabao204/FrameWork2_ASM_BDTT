@@ -8,6 +8,7 @@ const {
     getProductById,
     updateProductById,
     deleteProductById,
+    getProductsByCategory,
     upload
 } = require('./controllers/productController');
 const {
@@ -41,11 +42,15 @@ app.put('/api/users/:id', authenticate, updateUser);
 app.delete('/api/users/:id', authenticate, deleteUser);
 
 // Product routes
+
 app.post('/api/products', upload.single('file'), createProduct);
 app.get('/api/products', getAllProducts);
 app.get('/api/products/:id', getProductById);
 app.put('/api/products/:id', upload.single('file'), updateProductById);
 app.delete('/api/products/:id', deleteProductById);
+// Product routes
+app.get('/api/products/category/:categoryId', getProductsByCategory);
+
 
 // Category routes
 app.post('/api/categories', createCategory);
