@@ -1,7 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import { getProduct } from '../../services/Product';
-import {toast} from "react-toastify";
-import {Link, useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { getProduct, getProductsByCategory } from '../../services/Product';
+import { getCategory } from '../../services/Category';
+import { toast } from 'react-toastify';
+import { Link, useNavigate } from 'react-router-dom';
+
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -29,6 +31,21 @@ const ProductsPage = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const result = await getCategory();
+      setCategories(result);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      toast.error('Error fetching categories. Please try again later.');
+    }
+  };
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+    fetchProducts(event.target.value);
+  };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -37,11 +54,10 @@ const ProductsPage = () => {
   };
 
   const handleProductClick = (id) => {
-    navigate(`/products/${id}`); // Navigate to the product detail page
+    navigate(`/products/${id}`);
   };
 
   const handleAddToCart = (id) => {
-    // Handle adding the product to the cart
     console.log(`Product with id ${id} added to cart`);
   };
 
