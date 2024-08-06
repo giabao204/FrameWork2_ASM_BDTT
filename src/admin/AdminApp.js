@@ -68,8 +68,6 @@ const AdminApp = () => {
                 <Footer />
             </div>
         </div>
-    ) : (
-        <Navigate to="/login" />
     );
 };
 
