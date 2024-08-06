@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import {Routes, Route, Navigate, useNavigate} from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -9,8 +9,6 @@ import DanhSach from './pages/DanhSach';
 import { getUser } from '../services/Auth';
 import { useCookies } from 'react-cookie';
 import Category from './pages/Category/index';
-import User from './pages/User/index';
-import Product from "./pages/Product/index";
 import User from './pages/User/index';
 import Product from "./pages/Product/index";
 import { ToastContainer, toast } from 'react-toastify';
