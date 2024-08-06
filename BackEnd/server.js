@@ -41,10 +41,10 @@ app.put('/api/users/:id', authenticate, updateUser);
 app.delete('/api/users/:id', authenticate, deleteUser);
 
 // Product routes
-app.post('/api/products', upload.single('image'), createProduct);
+app.post('/api/products', upload.single('file'), createProduct);
 app.get('/api/products', getAllProducts);
 app.get('/api/products/:id', getProductById);
-app.put('/api/products/:id', upload.single('image'), updateProductById);
+app.put('/api/products/:id', upload.single('file'), updateProductById);
 app.delete('/api/products/:id', deleteProductById);
 
 // Category routes

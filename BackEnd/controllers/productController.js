@@ -8,20 +8,14 @@ const upload = multer({ storage: storage });
 // Tạo sản phẩm mới
 const createProduct = async (req, res) => {
     try {
-        const { name, price, content, cate_id } = req.body;
-        let image = null;
+        const { name, price, content, cate_id, image } = req.body;
+        let base64Image = null;
 
-        if (req.file) {
-            // Validate file type (example for images)
-            if (!req.file.mimetype.startsWith('image/')) {
-                return res.status(400).json({ error: 'Invalid file type. Only images are allowed.' });
-            }
-
-            // Convert file buffer to base64
-            image = req.file.buffer.toString('base64');
+        if (image) {
+            base64Image = image;
         }
 
-        const product = await Product.create({ name, image, price, content, cate_id });
+        const product = await Product.create({ name, image: base64Image, price, content, cate_id });
         res.status(201).json(product);
     } catch (error) {
         res.status(400).json({ error: error.message });

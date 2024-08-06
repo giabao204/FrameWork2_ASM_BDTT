@@ -5,8 +5,7 @@ import { getProduct, postProduct, updateProduct, deleteProduct } from '../../../
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getCategory } from "../../../services/Category";
-import { convertFileToBase64 } from "../../../utils/Helper";
-import { BASE_URL } from "../../../api";
+import {convertFileToBase64, convertToJpg} from "../../../utils/Helper";
 
 const Product = () => {
     const { handleSubmit, control, reset, setValue, setError, formState: { errors } } = useForm();
@@ -14,7 +13,6 @@ const Product = () => {
     const [editingProduct, setEditingProduct] = useState(null);
     const [productToDelete, setProductToDelete] = useState(null);
     const [error, setErrorMessage] = useState('');
-
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
 
@@ -30,7 +28,7 @@ const Product = () => {
             const result = await getProduct();
             const productsWithImageURL = result.map(product => ({
                 ...product,
-                image: `data:image/jpeg;base64,${product.image}` // assuming the image is in jpeg format
+                image: `data:image/jpeg;base64,${product.image}`
             }));
             setProducts(productsWithImageURL);
         } catch (err) {
@@ -49,42 +47,64 @@ const Product = () => {
         }
     };
 
+    const getCategoryNameById = (id) => {
+        const category = categories.find(cat => cat.id === id);
+        return category ? category.name : 'Unknown Category';
+    };
+
     const handleClose = () => {
         setShow(false);
         setEditingProduct(null);
         setErrorMessage('');
         reset();
     };
+
     const handleShow = () => setShow(true);
 
     const handleCloseConfirmDelete = () => setShowConfirmDelete(false);
 
     const onSubmit = async (data) => {
-        if (data.image && data.image.length > 0 && data.image[0] instanceof Blob) {
-            const resultBase64 = await convertFileToBase64(data.image[0]);
-            data.image = resultBase64?.result?.split(",")[1];
-        } else {
-            setError('image', { type: 'manual', message: 'Hình ảnh sản phẩm không hợp lệ.' });
-            return;
-        }
+        console.log('Submitted Data:', data);
+        let hasErrors = false;
 
         // Validations
         if (!data.name.trim()) {
             setError('name', { type: 'manual', message: 'Tên sản phẩm không được bỏ trống.' });
-            return;
+            hasErrors = true;
         }
-        if (!data.price|| isNaN(data.price)) {
-            setError('price', { type: 'manual', message: 'Giá sản phẩm không được bỏ trống.' });
-            return;
+
+        if (!data.cate_id || (typeof data.cate_id === 'string' && !data.cate_id.trim())) {
+            setError('cate_id', { type: 'manual', message: 'Thể loại sản phẩm không được bỏ trống.' });
+            hasErrors = true;
         }
+
         if (!data.content.trim()) {
             setError('content', { type: 'manual', message: 'Mô tả sản phẩm không được bỏ trống.' });
-            return;
+            hasErrors = true;
         }
-        if (!data.cate_id|| (typeof data.cate_id === 'string' && !data.cate_id.trim())) {
-            setError('cate_id', { type: 'manual', message: 'Thể loại sản phẩm không được bỏ trống.' });
-            return;
+
+        if (!data.price || isNaN(data.price)) {
+            setError('price', { type: 'manual', message: 'Giá sản phẩm không hợp lệ.' });
+            hasErrors = true;
         }
+
+        if (data.file && data.file instanceof Blob) {
+            try {
+            const blob = await convertToJpg(data.file);
+            const resultBase64 = await convertFileToBase64(blob);
+            data.image = resultBase64.split(",")[1];
+            } catch (error) {
+                setError('file', {type: 'manual', message: 'Hình ảnh không thể chuyển đổi.'});
+                hasErrors = true;
+            }
+        } else if (editingProduct && !data.file) {
+            data.image = editingProduct.image;
+        }else {
+            setError('file', { type: 'manual', message: 'Hình ảnh sản phẩm không hợp lệ.' });
+            hasErrors = true;
+        }
+
+        if (hasErrors) return;
 
         try {
             if (editingProduct) {
@@ -111,7 +131,7 @@ const Product = () => {
         setEditingProduct(product);
         setValue('name', product.name);
         setValue('price', product.price);
-        setValue('image', product.image);
+        setValue('file', null);
         setValue('cate_id', product.cate_id);
         setValue('content', product.content);
         handleShow();
@@ -162,9 +182,9 @@ const Product = () => {
                     <tr key={value.id}>
                         <td>{index + 1}</td>
                         <td>{value.name}</td>
-                        <td>{value.cate_id}</td>
+                        <td>{getCategoryNameById(value.cate_id)}</td>
                         <td>{value.content}</td>
-                        <td>{value.price}</td>
+                        <td>{value.price}đ</td>
                         <td>
                             <img src={value.image} alt={value.name} style={{width: '100px'}}/>
                         </td>
@@ -186,7 +206,7 @@ const Product = () => {
                     <Modal.Title>{editingProduct ? 'Chỉnh sửa' : 'Thêm'} sản phẩm</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={handleSubmit(onSubmit)}>
+                    <Form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
                         <Form.Group controlId="formProductName" className="modal-form-group">
                             <Form.Label>Tên sản phẩm</Form.Label>
                             <Controller
@@ -238,7 +258,8 @@ const Product = () => {
                                 defaultValue=""
                                 render={({ field }) => (
                                     <Form.Control
-                                        type="text"
+                                        as="textarea"
+                                        rows={4}
                                         placeholder="Nhập mô tả sản phẩm"
                                         {...field}
                                         isInvalid={!!errors.content}
@@ -268,22 +289,27 @@ const Product = () => {
                                 {errors.price?.message}
                             </Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group controlId="formProductImage" className="modal-form-group" encType="multipart/form-data">
+                        <Form.Group controlId="formProductImage" className="modal-form-group">
                             <Form.Label>Hình Ảnh</Form.Label>
+                            {editingProduct && editingProduct.image && (
+                                <div className="mb-3">
+                                    <img src={editingProduct.image} alt="Product" style={{width: '100px'}} />
+                                </div>
+                            )}
                             <Controller
-                                name="image"
+                                name="file"
                                 control={control}
                                 defaultValue=""
                                 render={({ field }) => (
                                     <Form.Control
                                         type="file"
-                                        onChange={(e) => field.onChange(e.target.files)}
-                                        isInvalid={!!errors.image}
+                                        onChange={(e) => field.onChange(e.target.files[0])}
+                                        isInvalid={!!errors.file}
                                     />
                                 )}
                             />
                             <Form.Control.Feedback type="invalid">
-                                {errors.image?.message}
+                                {errors.file?.message}
                             </Form.Control.Feedback>
                         </Form.Group>
 
@@ -291,10 +317,7 @@ const Product = () => {
                             <Button variant="secondary" onClick={handleClose}>
                                 Đóng
                             </Button>
-                            <Button
-                                variant="primary"
-                                type="submit"
-                            >
+                            <Button variant="primary" type="submit">
                                 {editingProduct ? 'Cập Nhật' : 'Thêm'} Sản Phẩm
                             </Button>
                         </Modal.Footer>
@@ -313,10 +336,7 @@ const Product = () => {
                     <Button variant="secondary" onClick={handleCloseConfirmDelete}>
                         Hủy
                     </Button>
-                    <Button
-                        variant="danger"
-                        onClick={() => productToDelete && handleDeleteProduct(productToDelete.id)}
-                    >
+                    <Button variant="danger" onClick={() => productToDelete && handleDeleteProduct(productToDelete.id)}>
                         Xóa
                     </Button>
                 </Modal.Footer>

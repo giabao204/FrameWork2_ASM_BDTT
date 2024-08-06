@@ -11,6 +11,7 @@ import Login from './components/Login/index';
 import Register from './components/Register/index';
 import Cart from './pages/Cart';
 import Profile from "./pages/Profile";
+import ProductDetail from "./pages/ProductDetail";
 
 const ClientApp = () => {
   return (
@@ -21,12 +22,16 @@ const ClientApp = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/products" element={<ProductsPage />} />
+
           <Route path="/about" element={<AboutPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
+
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:id" element={<ProductDetail />}/>
+
         </Routes>
       </div>
       <ClientFooter />
