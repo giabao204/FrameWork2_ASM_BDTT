@@ -157,6 +157,13 @@ const Product = () => {
         return str.slice(0, num) + '...';
     };
 
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+        }).format(amount);
+    };
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         const maxSize = 10 * 1024 * 1024; // Giới hạn 5MB
@@ -203,7 +210,7 @@ const Product = () => {
                         <td>{value.name}</td>
                         <td>{getCategoryNameById(value.cate_id)}</td>
                         <td>{truncate(value.content, 30)}</td>
-                        <td>{value.price}đ</td>
+                        <td>{formatCurrency(value.price)}</td>
                         <td>
                             <img src={value.image} alt={value.name} style={{width: '100px'}}/>
                         </td>
