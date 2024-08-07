@@ -38,18 +38,6 @@ const Sidebar = () => {
           <Nav.Link as={NavLink} to="/admin/product" className="sidebar-link">
             <FontAwesomeIcon icon={faList} className="me-2" /> Danh sách
           </Nav.Link>
-          <Nav.Link as={NavLink} to="/admin/billing" className="sidebar-link" activeClassName="active-link">
-            <FontAwesomeIcon icon={faFileInvoiceDollar} className="me-2" /> Billing
-          </Nav.Link>
-          <Nav.Link as={NavLink} to="/admin/profile" className="sidebar-link" activeClassName="active-link">
-            <FontAwesomeIcon icon={faUser} className="me-2" /> Profile
-          </Nav.Link>
-          <Nav.Link as={NavLink} to="/admin/signin" className="sidebar-link" activeClassName="active-link">
-            <FontAwesomeIcon icon={faSignInAlt} className="me-2" /> Sign In
-          </Nav.Link>
-          <Nav.Link as={NavLink} to="/admin/signup" className="sidebar-link" activeClassName="active-link">
-            <FontAwesomeIcon icon={faUserPlus} className="me-2" /> Sign Up
-          </Nav.Link>
           <Nav.Link className="sidebar-link" onClick={handleLogout}>
             <FontAwesomeIcon icon={faSignOutAlt} className="me-2" /> Đăng Xuất
           </Nav.Link>
