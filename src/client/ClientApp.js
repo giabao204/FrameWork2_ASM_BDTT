@@ -21,7 +21,7 @@ const ClientApp = () => {
         <CartProvider>
             <ClientNavbar />
             <div className="container my-4">
-                <ToastContainer />
+
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/login" element={<Login />} />
@@ -36,6 +36,7 @@ const ClientApp = () => {
                     <Route path="/products/:id" element={<ProductDetail />} />
                     <Route path="/checkout" element={<Checkout />} />
                 </Routes>
+                <ToastContainer />
             </div>
             <ClientFooter />
         </CartProvider>

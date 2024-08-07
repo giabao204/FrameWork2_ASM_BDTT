@@ -14,12 +14,18 @@ export const getOneOrder = (id) => {
     });
 };
 
-export const createOrder = (orderData) => {
-    return request({
-        method: 'POST',
-        path: 'orders',
-        orderData
-    });
+export const createOrder = async (orderData) => {
+    try {
+        const response = await request({
+            method: 'POST',
+            path: 'orders',
+            data: orderData
+        });
+        return response;
+    } catch (error) {
+        console.error('API call error:', error);
+        throw error;
+    }
 };
 
 export const updateOrder = (id, data) => {

@@ -1,39 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useCart } from '../components/Cart';
 import { Container, Form, Button, ListGroup, Image } from 'react-bootstrap';
 import { createOrder } from '../../services/Order';
 import { toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
 
 const Checkout = () => {
     const { cart, clearCart } = useCart();
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-    });
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const onSubmit = async (formData) => {
         const orderData = {
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            address: formData.address,
-            image: cart.map(item => item.image).join(','), // Kiểm tra cách gửi hình ảnh
+            ...formData,
+            image: cart.map(item => item.image).join(','), // Combining images as a string
             quantity: cart.reduce((total, item) => total + item.quantity, 0),
             total: calculateTotal()
         };
 
         try {
-            await createOrder(orderData);
+            const response = await createOrder(orderData);
+            console.log('API Response:', response); // Debugging log for API response
             clearCart();
             toast.success('Đặt hàng thành công!');
         } catch (error) {
@@ -41,9 +27,6 @@ const Checkout = () => {
             toast.error('Error creating order. Please try again later.');
         }
     };
-
-
-
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -59,46 +42,44 @@ const Checkout = () => {
     return (
         <Container>
             <h2 className="text-center text-success mb-4">Đặt Hàng</h2>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit(onSubmit)}>
                 <Form.Group className="mb-3" controlId="formName">
                     <Form.Label>Tên</Form.Label>
                     <Form.Control
                         type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
+                        {...register('name', { required: 'Tên là bắt buộc' })}
                     />
+                    {errors.name && <p className="text-danger">{errors.name.message}</p>}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formEmail">
                     <Form.Label>Email</Form.Label>
                     <Form.Control
                         type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
+                        {...register('email', {
+                            required: 'Email là bắt buộc',
+                            pattern: {
+                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                message: 'Email không hợp lệ'
+                            }
+                        })}
                     />
+                    {errors.email && <p className="text-danger">{errors.email.message}</p>}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formPhone">
                     <Form.Label>Số Điện Thoại</Form.Label>
                     <Form.Control
                         type="text"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        required
+                        {...register('phone', { required: 'Số điện thoại là bắt buộc' })}
                     />
+                    {errors.phone && <p className="text-danger">{errors.phone.message}</p>}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formAddress">
                     <Form.Label>Địa Chỉ</Form.Label>
                     <Form.Control
                         type="text"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        required
+                        {...register('address', { required: 'Địa chỉ là bắt buộc' })}
                     />
+                    {errors.address && <p className="text-danger">{errors.address.message}</p>}
                 </Form.Group>
                 <h3 className="text-center text-success mb-4">Giỏ Hàng</h3>
                 <ListGroup>

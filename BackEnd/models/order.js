@@ -16,7 +16,7 @@ const Order = sequelize.define('orders', {
         allowNull: false
     },
     phone: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING(15),
         allowNull: false
     },
     address: {
@@ -44,8 +44,7 @@ const Order = sequelize.define('orders', {
         defaultValue: DataTypes.NOW
     }
 }, {
-    timestamps: true, // Sẽ tự động quản lý createdAt và updatedAt
-    tableName: 'order' // Đặt tên bảng cho mô hình
+    timestamps: true,
 });
 
 module.exports = Order;

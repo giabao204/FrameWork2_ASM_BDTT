@@ -159,7 +159,7 @@ const Product = () => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        const maxSize = 5 * 1024 * 1024; // Giới hạn 5MB
+        const maxSize = 10 * 1024 * 1024; // Giới hạn 5MB
 
         if (file.size > maxSize) {
             setError('file', { type: 'manual', message: 'File quá lớn. Vui lòng chọn file nhỏ hơn 5MB.' });
