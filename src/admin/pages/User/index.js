@@ -45,26 +45,27 @@ const User = () => {
   };
 
   const onSubmit = async (data) => {
+    let hasErrors = false;
     if (!data.username.trim()) {
       setError('username', { type: 'manual', message: 'Tên người dùng không được bỏ trống.' });
-      return;
+      hasErrors = true;
     }
     if (!editingUser && !data.password.trim()) {
       setError('password', { type: 'manual', message: 'Mật khẩu người dùng không được bỏ trống.' });
-      return;
+      hasErrors = true;
     } else if (!editingUser && !data.password.trim() || data.password.length < 6) {
       setError('password', { type: 'manual', message: 'Mật khẩu người dùng phải có ít nhất 6 kí tự.' });
-      return;
+      hasErrors = true;
     }
     if (!data.email.trim()) {
       setError('email', { type: 'manual', message: 'Email người dùng không được bỏ trống.' });
-      return;
+      hasErrors = true;
     }
     if (!data.role.trim()) {
       setError('role', { type: 'manual', message: 'Quyền người dùng không được bỏ trống.' });
-      return;
+      hasErrors = true;
     }
-
+    if (hasErrors) return;
     try {
       if (editingUser) {
         await updateUser(editingUser.id, data);
