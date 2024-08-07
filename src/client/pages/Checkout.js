@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 
 const Checkout = () => {
     const { cart, clearCart } = useCart();
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
     const onSubmit = async (formData) => {
         const orderData = {
@@ -21,6 +21,7 @@ const Checkout = () => {
             const response = await createOrder(orderData);
             console.log('API Response:', response); // Debugging log for API response
             clearCart();
+            reset(); // Clear the form fields
             toast.success('Đặt hàng thành công!');
         } catch (error) {
             console.error('Error creating order:', error);

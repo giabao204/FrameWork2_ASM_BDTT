@@ -4,7 +4,7 @@ import { getCategory } from '../../services/Category';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../components/Cart';
-import { useCookies } from 'react-cookie'; // Import useCookies
+import { useCookies } from 'react-cookie';
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -12,7 +12,7 @@ const ProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const navigate = useNavigate();
   const { addItemToCart } = useCart();
-  const [cookies] = useCookies(['token']); // Check cookie for authentication
+  const [cookies] = useCookies(['token']);
 
   useEffect(() => {
     fetchProducts();
@@ -60,7 +60,7 @@ const ProductsPage = () => {
   const handleAddToCart = (product) => {
     if (!cookies.token) {
       toast.error('Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.');
-      navigate('/login'); // Redirect to login page
+      navigate('/login');
       return;
     }
     try {
