@@ -21,9 +21,7 @@ const ProductsPage = () => {
 
   const fetchProducts = async (categoryId = '') => {
     try {
-      const result = categoryId
-          ? await getProductsByCategory(categoryId)
-          : await getProduct();
+      const result = categoryId ? await getProductsByCategory(categoryId) : await getProduct();
       const productsWithImageURL = result.map(product => ({
         ...product,
         image: `data:image/jpeg;base64,${product.image}`
@@ -108,8 +106,7 @@ const ProductsPage = () => {
                         {value.name}
                       </Link>
                       <h6 className="text-danger mb-3">{formatCurrency(value.price)}</h6>
-                      <button className="btn btn-outline-success px-3" style={{ fontSize: '14px' }}
-                              onClick={() => handleAddToCart(value)}>Add To Cart</button>
+                      <button className="btn btn-outline-success px-3" style={{ fontSize: '14px' }} onClick={() => handleAddToCart(value)}>Add To Cart</button>
                     </div>
                   </div>
               ))}

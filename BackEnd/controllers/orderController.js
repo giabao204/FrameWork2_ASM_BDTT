@@ -3,24 +3,19 @@ const Order = require('../models/order');
 // Thêm đơn hàng
 async function createOrder(req, res) {
     try {
-        const { name, email, phone, address, image, quantity, total, status } = req.body;
+        const { name, email, phone, address, image, product_name, quantity, total } = req.body;
 
         let base64Image = null;
-
         if (image) {
-            base64Image = image;
+            // Loại bỏ tiền tố 'data:image/jpeg;base64,' nếu có
+            base64Image = image.replace(/^data:image\/jpeg;base64,/, '');
         }
 
-        // Check for missing fields
-        if (!name || !email || !phone || !address || !image || !quantity || !total) {
+        if (!name || !email || !phone || !address || !image || !product_name || !quantity || !total) {
             return res.status(400).json({ message: 'All fields are required' });
         }
-        
 
-        // Set default value for status if not provided
-        const orderStatus =  1;
-
-        console.log('Order Data:', req.body); // Log the request body
+        const orderStatus = 1;
 
         const order = await Order.create({
             name,
@@ -28,9 +23,10 @@ async function createOrder(req, res) {
             phone,
             address,
             image: base64Image,
+            product_name,
             quantity,
             total,
-            status: orderStatus
+            status: orderStatus,
         });
 
         res.status(201).json(order);
@@ -39,6 +35,8 @@ async function createOrder(req, res) {
         res.status(500).json({ message: 'Error creating order', error: error.message });
     }
 }
+
+
 
 
 // Lấy tất cả đơn hàng

@@ -94,10 +94,11 @@ const DanhSach = () => {
 
         <Table striped bordered hover className="mt-3">
           <thead className="table-dark">
-          <tr>
+          <tr className="text-center">
             <th>#</th>
             <th>Tên khách hàng</th>
             <th>Hình sản phẩm</th>
+            <th>Tên sản phẩm</th>
             <th>Số lượng</th>
             <th>Trạng thái</th>
             <th>Hành Động</th>
@@ -110,11 +111,23 @@ const DanhSach = () => {
                     <td>{order.id}</td>
                     <td>{order.name}</td>
                     <td>
-                      <img src={order.image} alt={order.name} style={{ width: '100px' }} />
+                      {order.image ? (
+                          order.image.split(',').map((img, index) => (
+                              <img
+                                  key={index}
+                                  src={`data:image/jpeg;base64,${img}`}
+                                  alt={`Image ${index}`}
+                                  style={{ width: '100px', marginRight: '5px' }}
+                              />
+                          ))
+                      ) : (
+                          <p>No images available</p>
+                      )}
                     </td>
+                    <td>{order.product_name}</td>
                     <td>{order.quantity}</td>
                     <td>
-                      {order.status == '1' ? 'Chờ xác nhận' :'Đã xác nhận'  }
+                      {order.status == '1' ? 'Chờ xác nhận' : 'Đã xác nhận'}
                     </td>
                     <td>
                       <Button
@@ -124,18 +137,18 @@ const DanhSach = () => {
                       >
                         Sửa
                       </Button>
-                      {/*<Button*/}
-                      {/*    variant="danger"*/}
-                      {/*    onClick={() => handleShowConfirmDelete(order)}*/}
-                      {/*>*/}
-                      {/*  Xóa*/}
-                      {/*</Button>*/}
+                      <Button
+                          variant="danger"
+                          onClick={() => handleShowConfirmDelete(order)}
+                      >
+                        Xóa
+                      </Button>
                     </td>
                   </tr>
               ))
           ) : (
               <tr>
-                <td colSpan="6">Không có đơn hàng nào</td>
+                <td colSpan="7">Không có đơn hàng nào</td>
               </tr>
           )}
           </tbody>
@@ -242,29 +255,6 @@ const DanhSach = () => {
             </Form>
           </Modal.Body>
         </Modal>
-
-        {/* Modal for Confirm Delete */}
-        {/*<Modal show={showConfirmDelete} onHide={handleCloseConfirmDelete}>*/}
-        {/*  <Modal.Header closeButton>*/}
-        {/*    <Modal.Title>Xác nhận xóa</Modal.Title>*/}
-        {/*  </Modal.Header>*/}
-        {/*  <Modal.Body>*/}
-        {/*    Bạn có chắc chắn muốn xóa đơn hàng này không?*/}
-        {/*  </Modal.Body>*/}
-        {/*  <Modal.Footer>*/}
-        {/*    <Button variant="secondary" onClick={handleCloseConfirmDelete}>*/}
-        {/*      Hủy*/}
-        {/*    </Button>*/}
-        {/*    <Button*/}
-        {/*        variant="danger"*/}
-        {/*        onClick={() => orderToDelete && handleDeleteOrder(orderToDelete.id)}*/}
-        {/*    >*/}
-        {/*      Xóa*/}
-        {/*    </Button>*/}
-        {/*  </Modal.Footer>*/}
-        {/*</Modal>*/}
-
-        {/* Toast Container */}
         <ToastContainer />
       </div>
   );

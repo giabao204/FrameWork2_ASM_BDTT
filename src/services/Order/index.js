@@ -39,6 +39,6 @@ export const updateOrder = (id, data) => {
 export const deleteOrder = (id) => {
     return request({
         method: 'DELETE',
-        path: `products/${id}`
+        path: `orders/${id}`
     });
 };

@@ -21,12 +21,9 @@ const Login = () => {
       if (response.token) {
         toast.dismiss(loadingToast);
         setIsLoading(true);
-        localStorage.setItem('loginMessage', 'Đăng nhập thành công!');
         setCookie('token', response.token, { path: '/' });
 
         setTimeout(() => {
-          setIsLoading(false);
-          toast.success('Đăng nhập thành công!');
           navigate('/profile'); // Điều hướng tới trang profile sau khi đăng nhập thành công
         }, 2000);
       }
