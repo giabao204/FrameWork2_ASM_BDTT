@@ -83,8 +83,8 @@ const Product = () => {
             hasErrors = true;
         }
 
-        if (!data.price || isNaN(data.price)) {
-            setError('price', { type: 'manual', message: 'Giá sản phẩm không hợp lệ.' });
+        if (!data.price || isNaN(data.price) || data.price <= 0) {
+            setError('price', { type: 'manual', message: 'Giá sản phải là số dương.' });
             hasErrors = true;
         }
 
@@ -166,7 +166,7 @@ const Product = () => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        const maxSize = 10 * 1024 * 1024; // Giới hạn 5MB
+        const maxSize = 10 * 1024 * 1024;
 
         if (file.size > maxSize) {
             setError('file', { type: 'manual', message: 'File quá lớn. Vui lòng chọn file nhỏ hơn 5MB.' });
