@@ -13,7 +13,7 @@ import User from './pages/User/index';
 import Product from "./pages/Product/index";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import Order from './pages/DanhSach';
 const AdminApp = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['token', 'role']);
     const [loading, setLoading] = useState(true);
@@ -62,6 +62,7 @@ const AdminApp = () => {
                         <Route path="product" element={<Product />} />
                         <Route path="category" element={<Category />} />
                         <Route path="user" element={<User/>} />
+                        <Route path="order" element={<Order/>} />
                         {/* Các route khác */}
                     </Routes>
                 </div>

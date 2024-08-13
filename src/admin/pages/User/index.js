@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { getUser, postUser, updateUser, deleteUser } from '../../../services/User';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 
 const User = () => {
   const { handleSubmit, control, reset, setValue, setError, formState: { errors } } = useForm();
@@ -13,6 +14,7 @@ const User = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null);
   const [error, setErrorMessage] = useState('');
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
     fetchUsers();
@@ -53,7 +55,7 @@ const User = () => {
     if (!editingUser && !data.password.trim()) {
       setError('password', { type: 'manual', message: 'Mật khẩu người dùng không được bỏ trống.' });
       hasErrors = true;
-    } else if (!editingUser && !data.password.trim() || data.password.length < 6) {
+    } else if (!editingUser && data.password.length < 6) {
       setError('password', { type: 'manual', message: 'Mật khẩu người dùng phải có ít nhất 6 kí tự.' });
       hasErrors = true;
     }
@@ -66,14 +68,23 @@ const User = () => {
       hasErrors = true;
     }
     if (hasErrors) return;
+
     try {
       if (editingUser) {
-        await updateUser(editingUser.id, data);
-        toast.success('Cập nhật người dùng thành công.');
+        const result = await updateUser(editingUser.id, data);
+
+        // Check if role was changed from admin to user
+        if (editingUser.role === 'admin' && data.role === 'user') {
+          toast.success('Cập nhật người dùng thành công. Bạn sẽ được chuyển về trang chủ.');
+          navigate('/'); // Redirect to homepage
+        } else {
+          toast.success('Cập nhật người dùng thành công.');
+        }
       } else {
         await postUser(data);
         toast.success('Thêm người dùng thành công.');
       }
+
       fetchUsers();
       handleClose();
     } catch (err) {
@@ -92,6 +103,12 @@ const User = () => {
   };
 
   const handleDeleteUser = async (id) => {
+    if (userToDelete.role === 'admin') {
+      toast.error('Bạn không thể xóa tài khoản admin.');
+      handleCloseConfirmDelete();
+      return;
+    }
+
     try {
       await deleteUser(id);
       toast.success('Xóa người dùng thành công.');
@@ -105,22 +122,22 @@ const User = () => {
   };
 
   return (
-    <div className="container table-container">
-      <div className="table-actions">
-        <h2>Danh Sách người dùng</h2>
-        <Button variant="primary" onClick={handleShow}>
-          Thêm người dùng
-        </Button>
-      </div>
+      <div className="container table-container">
+        <div className="table-actions">
+          <h2>Danh Sách người dùng</h2>
+          <Button variant="primary" onClick={handleShow}>
+            Thêm người dùng
+          </Button>
+        </div>
 
-      {error && (
-        <Alert variant="danger" className="mt-3">
-          {error}
-        </Alert>
-      )}
+        {error && (
+            <Alert variant="danger" className="mt-3">
+              {error}
+            </Alert>
+        )}
 
-      <Table striped bordered hover className="mt-3">
-        <thead className="table-dark">
+        <Table striped bordered hover className="mt-3">
+          <thead className="table-dark">
           <tr>
             <th>#</th>
             <th>Tên người dùng</th>
@@ -128,163 +145,171 @@ const User = () => {
             <th>Quyền người dùng</th>
             <th>Hành Động</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           {users.length > 0 ? (
-            users.map((value) => (
-              <tr key={value.id}>
-                <td>{value.id}</td>
-                <td>{value.username}</td>
-                <td>{value.email}</td>
-                <td>{value.role}</td>
-                <td>
-                  <Button
-                    variant="warning"
-                    onClick={() => handleEditUser(value)}
-                    className="me-2"
-                  >
-                    Sửa
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleShowConfirmDelete(value)}
-                  >
-                    Xóa
-                  </Button>
-                </td>
-              </tr>
-            ))
+              users.map((value) => (
+                  <tr key={value.id}>
+                    <td>{value.id}</td>
+                    <td>{value.username}</td>
+                    <td>{value.email}</td>
+                    <td>{value.role}</td>
+                    <td>
+                      <Button
+                          variant="warning"
+                          onClick={() => handleEditUser(value)}
+                          className="me-2"
+                      >
+                        Sửa
+                      </Button>
+                      {value.role !== 'admin' && (
+                          <Button
+                              variant="danger"
+                              onClick={() => handleShowConfirmDelete(value)}
+                          >
+                            Xóa
+                          </Button>
+                      )}
+                    </td>
+                  </tr>
+              ))
           ) : (
-            <tr>
-              <td colSpan="5">Không có người dùng nào</td>
-            </tr>
+              <tr>
+                <td colSpan="5">Không có người dùng nào</td>
+              </tr>
           )}
-        </tbody>
-      </Table>
+          </tbody>
+        </Table>
 
-      {/* Modal for Add/Edit */}
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>{editingUser ? 'Chỉnh sửa' : 'Thêm'} người dùng</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            <Form.Group controlId="formUserUsername" className="modal-form-group">
-              <Form.Label>Tên người dùng</Form.Label>
-              <Controller
-                name="username"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <Form.Control
-                    type="text"
-                    placeholder="Nhập tên người dùng"
-                    {...field}
-                    isInvalid={!!errors.username}
-                  />
-                )}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.username?.message}
-              </Form.Control.Feedback>
-            </Form.Group>
-            {!editingUser && (
-              <Form.Group controlId="formUserPassword" className="modal-form-group">
-                <Form.Label>Mật khẩu người dùng</Form.Label>
+        {/* Modal for Add/Edit */}
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>{editingUser ? 'Chỉnh sửa' : 'Thêm'} người dùng</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <Form.Group controlId="formUserUsername" className="modal-form-group">
+                <Form.Label>Tên người dùng</Form.Label>
                 <Controller
-                  name="password"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <Form.Control
-                      type="password"
-                      placeholder="Nhập mật khẩu người dùng"
-                      {...field}
-                      isInvalid={!!errors.password}
-                    />
-                  )}
+                    name="username"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                        <Form.Control
+                            type="text"
+                            placeholder="Nhập tên người dùng"
+                            {...field}
+                            isInvalid={!!errors.username}
+                        />
+                    )}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.password?.message}
+                  {errors.username?.message}
                 </Form.Control.Feedback>
               </Form.Group>
+              {!editingUser && (
+                  <Form.Group controlId="formUserPassword" className="modal-form-group">
+                    <Form.Label>Mật khẩu người dùng</Form.Label>
+                    <Controller
+                        name="password"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                            <Form.Control
+                                type="password"
+                                placeholder="Nhập mật khẩu người dùng"
+                                {...field}
+                                isInvalid={!!errors.password}
+                            />
+                        )}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.password?.message}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+              )}
+              <Form.Group controlId="formUserEmail" className="modal-form-group">
+                <Form.Label>Email người dùng</Form.Label>
+                <Controller
+                    name="email"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                        <Form.Control
+                            type="email"
+                            placeholder="Nhập email người dùng"
+                            {...field}
+                            isInvalid={!!errors.email}
+                        />
+                    )}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.email?.message}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group controlId="formUserRole" className="modal-form-group">
+                <Form.Label>Quyền người dùng</Form.Label>
+                <Controller
+                    name="role"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                        <Form.Control
+                            as="select"
+                            {...field}
+                            isInvalid={!!errors.role}
+                        >
+                          <option value="user">User</option>
+                          <option value="admin">Admin</option>
+                        </Form.Control>
+                    )}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.role?.message}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Đóng
+                </Button>
+                <Button variant="primary" type="submit">
+                  {editingUser ? 'Cập Nhật' : 'Thêm'} người dùng
+                </Button>
+              </Modal.Footer>
+            </Form>
+          </Modal.Body>
+        </Modal>
+
+        {/* Modal for Confirm Delete */}
+        <Modal show={showConfirmDelete} onHide={handleCloseConfirmDelete}>
+          <Modal.Header closeButton>
+            <Modal.Title>Xác Nhận Xóa</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {userToDelete?.role === 'admin' ? (
+                'Bạn không thể xóa tài khoản admin.'
+            ) : (
+                'Bạn có chắc chắn muốn xóa người dùng này?'
             )}
-            <Form.Group controlId="formUserEmail" className="modal-form-group">
-              <Form.Label>Email người dùng</Form.Label>
-              <Controller
-                name="email"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <Form.Control
-                    type="email"
-                    placeholder="Nhập email người dùng"
-                    {...field}
-                    isInvalid={!!errors.email}
-                  />
-                )}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.email?.message}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="formUserRole" className="modal-form-group">
-              <Form.Label>Quyền người dùng</Form.Label>
-              <Controller
-                name="role"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <Form.Control
-                    as="select"
-                    {...field}
-                    isInvalid={!!errors.role}
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </Form.Control>
-                )}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.role?.message}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
-                Đóng
-              </Button>
-              <Button variant="primary" type="submit">
-                {editingUser ? 'Cập Nhật' : 'Thêm'} người dùng
-              </Button>
-            </Modal.Footer>
-          </Form>
-        </Modal.Body>
-      </Modal>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseConfirmDelete}>
+              Hủy
+            </Button>
+            {userToDelete?.role !== 'admin' && (
+                <Button
+                    variant="danger"
+                    onClick={() => userToDelete && handleDeleteUser(userToDelete.id)}
+                >
+                  Xóa
+                </Button>
+            )}
+          </Modal.Footer>
+        </Modal>
 
-      {/* Modal for Confirm Delete */}
-      <Modal show={showConfirmDelete} onHide={handleCloseConfirmDelete}>
-        <Modal.Header closeButton>
-          <Modal.Title>Xác Nhận Xóa</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Bạn có chắc chắn muốn xóa người dùng này?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseConfirmDelete}>
-            Hủy
-          </Button>
-          <Button
-            variant="danger"
-            onClick={() => userToDelete && handleDeleteUser(userToDelete.id)}
-          >
-            Xóa
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Toast Container */}
-      <ToastContainer />
-    </div>
+        {/* Toast Container */}
+        <ToastContainer />
+      </div>
   );
 };
 

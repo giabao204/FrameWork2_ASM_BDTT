@@ -35,6 +35,10 @@ const Order = sequelize.define('orders', {
         type: DataTypes.FLOAT,
         allowNull: false
     },
+    status: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW

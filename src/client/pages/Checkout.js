@@ -14,7 +14,8 @@ const Checkout = () => {
             ...formData,
             image: cart.map(item => item.image).join(','), // Combining images as a string
             quantity: cart.reduce((total, item) => total + item.quantity, 0),
-            total: calculateTotal()
+            total: calculateTotal(),
+            status: 1,
         };
 
         try {

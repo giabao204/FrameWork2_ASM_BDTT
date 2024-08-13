@@ -1,130 +1,272 @@
-import React, { useState } from 'react';
-import { Table, Button, Modal, Form } from 'react-bootstrap';
-import './DanhSach.css'; // Đảm bảo bạn đã import tệp CSS
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Modal, Form, Alert } from 'react-bootstrap';
+import { useForm, Controller } from 'react-hook-form';
+import { getAllOrders, updateOrder, deleteOrder } from '../../services/Order';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DanhSach = () => {
-  const [products, setProducts] = useState([
-    { id: 1, name: 'Sản phẩm 1', content: 'Nội dung sản phẩm 1', price: 100, image: 'https://via.placeholder.com/150' },
-    { id: 2, name: 'Sản phẩm 2', content: 'Nội dung sản phẩm 2', price: 200, image: 'https://via.placeholder.com/150' },
-  ]);
-  
+  const { handleSubmit, control, reset, setValue, setError, formState: { errors } } = useForm();
+  const [orders, setOrders] = useState([]);
   const [show, setShow] = useState(false);
-  const [newProduct, setNewProduct] = useState({ name: '', content: '', price: '', image: '' });
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [orderToDelete, setOrderToDelete] = useState(null);
+  const [error, setErrorMessage] = useState('');
 
-  const handleClose = () => setShow(false);
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const result = await getAllOrders();
+      setOrders(result);
+    } catch (err) {
+      console.error('Lỗi khi lấy đơn hàng:', err);
+      toast.error('Lỗi khi lấy đơn hàng. Vui lòng thử lại sau.');
+    }
+  };
+
+  const handleClose = () => {
+    setShow(false);
+    setEditingOrder(null);
+    setErrorMessage('');
+    reset();
+  };
+
   const handleShow = () => setShow(true);
 
-  const handleAddProduct = () => {
-    setProducts([...products, { id: products.length + 1, ...newProduct }]);
-    setNewProduct({ name: '', content: '', price: '', image: '' });
-    handleClose();
+  const handleCloseConfirmDelete = () => setShowConfirmDelete(false);
+
+  const handleShowConfirmDelete = (order) => {
+    setOrderToDelete(order);
+    setShowConfirmDelete(true);
   };
 
-  const handleEditProduct = (id) => {
-    // Logic chỉnh sửa sản phẩm
+  const onSubmit = async (data) => {
+    try {
+      if (editingOrder) {
+        await updateOrder(editingOrder.id, data);
+        toast.success('Cập nhật đơn hàng thành công.');
+      }
+      fetchOrders();
+      handleClose();
+    } catch (err) {
+      console.error(editingOrder ? 'Lỗi khi cập nhật đơn hàng:' : 'Lỗi khi thêm đơn hàng:', err);
+      toast.error(`Lỗi ${editingOrder ? 'cập nhật' : 'thêm'} đơn hàng. Vui lòng thử lại sau.`);
+    }
   };
 
-  const handleDeleteProduct = (id) => {
-    setProducts(products.filter(product => product.id !== id));
+  const handleEditOrder = (order) => {
+    setEditingOrder(order);
+    setValue('name', order.name);
+    setValue('file', ''); // Clear file input value
+    setValue('quantity', order.quantity);
+    setValue('status', order.status);
+    handleShow();
+  };
+
+  const handleDeleteOrder = async (id) => {
+    try {
+      await deleteOrder(id);
+      toast.success('Xóa đơn hàng thành công.');
+      fetchOrders();
+      handleCloseConfirmDelete();
+    } catch (err) {
+      console.error('Lỗi khi xóa đơn hàng:', err);
+      toast.error('Lỗi khi xóa đơn hàng. Vui lòng thử lại sau.');
+      handleCloseConfirmDelete();
+    }
   };
 
   return (
-    <div className="container table-container">
-      <div className="table-actions">
-        <h2>Danh Sách Sản Phẩm</h2>
-        <Button variant="primary" onClick={handleShow}>
-          Thêm Sản Phẩm
-        </Button>
-      </div>
+      <div className="container table-container">
+        <div className="table-actions">
+          <h2>Danh sách đơn hàng</h2>
+        </div>
 
-      <Table striped bordered hover className="mt-3">
-        <thead className="table-dark">
+        {error && (
+            <Alert variant="danger" className="mt-3">
+              {error}
+            </Alert>
+        )}
+
+        <Table striped bordered hover className="mt-3">
+          <thead className="table-dark">
           <tr>
             <th>#</th>
-            <th>Tên Sản Phẩm</th>
-            <th>Nội Dung</th>
-            <th>Giá</th>
-            <th>Hình Ảnh</th>
+            <th>Tên khách hàng</th>
+            <th>Hình sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Trạng thái</th>
             <th>Hành Động</th>
           </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <tr key={product.id}>
-              <td>{product.id}</td>
-              <td>{product.name}</td>
-              <td>{product.content}</td>
-              <td>{product.price}</td>
-              <td>
-                <img src={product.image} alt={product.name} />
-              </td>
-              <td>
-                <Button variant="warning" onClick={() => handleEditProduct(product.id)} className="me-2">
-                  Sửa
-                </Button>
-                <Button variant="danger" onClick={() => handleDeleteProduct(product.id)}>
-                  Xóa
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody className='text-center'>
+          {orders.length > 0 ? (
+              orders.map((order) => (
+                  <tr key={order.id}>
+                    <td>{order.id}</td>
+                    <td>{order.name}</td>
+                    <td>
+                      <img src={order.image} alt={order.name} style={{ width: '100px' }} />
+                    </td>
+                    <td>{order.quantity}</td>
+                    <td>
+                      {order.status == '1' ? 'Chờ xác nhận' :'Đã xác nhận'  }
+                    </td>
+                    <td>
+                      <Button
+                          variant="warning"
+                          onClick={() => handleEditOrder(order)}
+                          className="me-2"
+                      >
+                        Sửa
+                      </Button>
+                      {/*<Button*/}
+                      {/*    variant="danger"*/}
+                      {/*    onClick={() => handleShowConfirmDelete(order)}*/}
+                      {/*>*/}
+                      {/*  Xóa*/}
+                      {/*</Button>*/}
+                    </td>
+                  </tr>
+              ))
+          ) : (
+              <tr>
+                <td colSpan="6">Không có đơn hàng nào</td>
+              </tr>
+          )}
+          </tbody>
+        </Table>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Thêm Sản Phẩm Mới</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formProductName" className="modal-form-group">
-              <Form.Label>Tên Sản Phẩm</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Nhập tên sản phẩm"
-                value={newProduct.name}
-                onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-              />
-            </Form.Group>
-            <Form.Group controlId="formProductContent" className="modal-form-group">
-              <Form.Label>Nội Dung</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Nhập nội dung sản phẩm"
-                value={newProduct.content}
-                onChange={(e) => setNewProduct({ ...newProduct, content: e.target.value })}
-              />
-            </Form.Group>
-            <Form.Group controlId="formProductPrice" className="modal-form-group">
-              <Form.Label>Giá</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Nhập giá sản phẩm"
-                value={newProduct.price}
-                onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-              />
-            </Form.Group>
-            <Form.Group controlId="formProductImage" className="modal-form-group">
-              <Form.Label>Hình Ảnh</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Nhập URL hình ảnh"
-                value={newProduct.image}
-                onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-          <Button variant="primary" onClick={handleAddProduct}>
-            Thêm Sản Phẩm
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+        {/* Modal for Add/Edit */}
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>{editingOrder ? 'Chỉnh sửa đơn hàng' : 'Thêm đơn hàng'}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              {!editingOrder && (
+                  <>
+                    <Form.Group controlId="formOrderName" className="modal-form-group">
+                      <Form.Label>Tên khách hàng</Form.Label>
+                      <Controller
+                          name="name"
+                          control={control}
+                          rules={{ required: 'Tên khách hàng là bắt buộc' }}
+                          render={({ field }) => (
+                              <Form.Control
+                                  type="text"
+                                  placeholder="Nhập tên khách hàng"
+                                  {...field}
+                                  isInvalid={!!errors.name}
+                              />
+                          )}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.name?.message}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group controlId="formOrderImage" className="modal-form-group">
+                      <Form.Label>Hình ảnh sản phẩm</Form.Label>
+                      <Controller
+                          name="file"
+                          control={control}
+                          rules={{ required: 'Hình ảnh sản phẩm là bắt buộc' }}
+                          render={({ field }) => (
+                              <Form.Control
+                                  type="file"
+                                  {...field}
+                                  isInvalid={!!errors.file}
+                              />
+                          )}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.file?.message}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group controlId="formOrderQuantity" className="modal-form-group">
+                      <Form.Label>Số lượng</Form.Label>
+                      <Controller
+                          name="quantity"
+                          control={control}
+                          rules={{ required: 'Số lượng là bắt buộc', min: 1 }}
+                          render={({ field }) => (
+                              <Form.Control
+                                  type="number"
+                                  placeholder="Nhập số lượng"
+                                  {...field}
+                                  isInvalid={!!errors.quantity}
+                              />
+                          )}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.quantity?.message}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </>
+              )}
+              {editingOrder && (
+                  <Form.Group controlId="formOrderStatus" className="modal-form-group">
+                    <Form.Label>Trạng thái</Form.Label>
+                    <Controller
+                        name="status"
+                        control={control}
+                        rules={{ required: 'Trạng thái là bắt buộc' }}
+                        render={({ field }) => (
+                            <Form.Control
+                                as="select"
+                                {...field}
+                                isInvalid={!!errors.status}
+                            >
+                              <option value="1">Chờ xác nhận</option>
+                              <option value="2">Đã xác nhận</option>
+                            </Form.Control>
+                        )}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.status?.message}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+              )}
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Đóng
+                </Button>
+                <Button variant="primary" type="submit">
+                  {editingOrder ? 'Cập nhật đơn hàng' : 'Thêm đơn hàng'}
+                </Button>
+              </Modal.Footer>
+            </Form>
+          </Modal.Body>
+        </Modal>
+
+        {/* Modal for Confirm Delete */}
+        {/*<Modal show={showConfirmDelete} onHide={handleCloseConfirmDelete}>*/}
+        {/*  <Modal.Header closeButton>*/}
+        {/*    <Modal.Title>Xác nhận xóa</Modal.Title>*/}
+        {/*  </Modal.Header>*/}
+        {/*  <Modal.Body>*/}
+        {/*    Bạn có chắc chắn muốn xóa đơn hàng này không?*/}
+        {/*  </Modal.Body>*/}
+        {/*  <Modal.Footer>*/}
+        {/*    <Button variant="secondary" onClick={handleCloseConfirmDelete}>*/}
+        {/*      Hủy*/}
+        {/*    </Button>*/}
+        {/*    <Button*/}
+        {/*        variant="danger"*/}
+        {/*        onClick={() => orderToDelete && handleDeleteOrder(orderToDelete.id)}*/}
+        {/*    >*/}
+        {/*      Xóa*/}
+        {/*    </Button>*/}
+        {/*  </Modal.Footer>*/}
+        {/*</Modal>*/}
+
+        {/* Toast Container */}
+        <ToastContainer />
+      </div>
   );
 };
 
