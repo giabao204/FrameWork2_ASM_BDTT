@@ -27,12 +27,20 @@ const Order = sequelize.define('orders', {
         type: DataTypes.TEXT('long'),
         allowNull: false
     },
+    product_name: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
     quantity: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
     total: {
         type: DataTypes.FLOAT,
+        allowNull: false
+    },
+    status: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     createdAt: {

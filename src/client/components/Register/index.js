@@ -51,7 +51,7 @@ const Register = () => {
                       {...registerInput('email', {
                         required: "Email là bắt buộc",
                         pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                          value: /^[A-Z0-9._%+-]+@[A-Z.-]+\.[A-Z]{2,4}$/i,
                           message: "Email không hợp lệ"
                         }
                       })}

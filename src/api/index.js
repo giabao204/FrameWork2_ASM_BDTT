@@ -26,7 +26,7 @@ const request = async ({
 
         return res.data;
     } catch (error) {
-        alert(error?.response?.data?.message || "Error");
+        console.log(error?.response?.data?.message || "Error");
         return null;
     }
 };

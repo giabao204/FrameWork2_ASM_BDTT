@@ -34,7 +34,6 @@ app.use(cors({
     origin: 'http://localhost:3000', // Chỉ cho phép từ nguồn gốc này
 }));
 
-app.use(bodyParser.json()); // Đối với JSON
 app.use(bodyParser.json({ limit: '100mb' }));
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 

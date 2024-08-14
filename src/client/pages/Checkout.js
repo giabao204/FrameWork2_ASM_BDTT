@@ -13,8 +13,10 @@ const Checkout = () => {
         const orderData = {
             ...formData,
             image: cart.map(item => item.image).join(','), // Combining images as a string
+            product_name: cart.map(item => item.name).join(', '), // Combining product names as a string
             quantity: cart.reduce((total, item) => total + item.quantity, 0),
-            total: calculateTotal()
+            total: calculateTotal(),
+            status: 1,
         };
 
         try {
@@ -28,6 +30,7 @@ const Checkout = () => {
             toast.error('Error creating order. Please try again later.');
         }
     };
+
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -59,7 +62,7 @@ const Checkout = () => {
                         {...register('email', {
                             required: 'Email là bắt buộc',
                             pattern: {
-                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\.[a-zA-Z]{2,4}$/,
                                 message: 'Email không hợp lệ'
                             }
                         })}
