@@ -137,12 +137,6 @@ const DanhSach = () => {
                       >
                         Sửa
                       </Button>
-                      <Button
-                          variant="danger"
-                          onClick={() => handleShowConfirmDelete(order)}
-                      >
-                        Xóa
-                      </Button>
                     </td>
                   </tr>
               ))
