@@ -6,7 +6,7 @@ const ContactPage = () => {
       {/* Hero Header Start */}
       <div className="container-fluid bg-success hero-header mb-5" style={{ padding: '50px 0' }}>
         <div className="container text-center">
-          <h1 className="display-4 text-white mb-3 animated slideInDown">Contact</h1>
+          <h1 className="display-4 text-white mb-3 animated slideInDown">Liên Hệ</h1>
         </div>
       </div>
       {/* Hero Header End */}

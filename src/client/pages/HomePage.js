@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruck, faHeadset, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
@@ -6,8 +6,29 @@ import { NavLink } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import './HomePage.css';
 import { toast, ToastContainer } from "react-toastify";
+import { getProduct } from '../../services/Product'; // Import hàm lấy sản phẩm
 
 const HomePage = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const result = await getProduct();
+        setProducts(result.slice(0, 4)); // Chỉ lấy 4 sản phẩm đầu tiên
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Error fetching products. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   useEffect(() => {
     const adminAccessError = localStorage.getItem('adminAccessError');
     if (adminAccessError) {
@@ -15,6 +36,13 @@ const HomePage = () => {
       localStorage.removeItem('adminAccessError');
     }
   }, []);
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(amount);
+  };
 
   return (
       <div>
@@ -32,29 +60,29 @@ const HomePage = () => {
         <div className="container-fluid py-5">
           <div className="container">
             <div className="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style={{ maxWidth: '600px' }}>
-              <h1 className="text-primary mb-3"><span className="fw-light text-dark">Our Natural</span> Hair Products</h1>
-              <p className="mb-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aliquet, erat non malesuada consequat, nibh erat tempus risus.</p>
+              <h1 className="text-primary mb-3"><span className="fw-light text-dark">Nguồn</span> Sách</h1>
+              <p className="mb-5">Mua sách trực tuyến mang lại nhiều lợi ích cho người dùng. Các trang web bán sách cung cấp một loạt các đầu sách từ nhiều thể loại khác nhau, giúp người đọc dễ dàng tìm thấy những cuốn sách yêu thích.</p>
             </div>
-            <div className="row g-4">
-              {Array.from({ length: 4 }).map((_, idx) => (
-                  <div key={idx} className="col-md-6 col-lg-3 wow fadeIn" data-wow-delay={`${0.1 * (idx + 1)}s`}>
-                    <div className="product-item text-center border h-100 p-4">
-                      <img className="img-fluid mb-4 product-image" src={`/images/anh-san-pham-1.jpg`} alt={`Product ${idx + 1}`} />
-                      <div className="mb-2">
-                        <small className="fa fa-star text-primary"></small>
-                        <small className="fa fa-star text-primary"></small>
-                        <small className="fa fa-star text-primary"></small>
-                        <small className="fa fa-star text-primary"></small>
-                        <small className="fa fa-star text-primary"></small>
-                        <small>(99)</small>
+            {loading ? (
+                <div>Loading...</div>
+            ) : error ? (
+                <div>{error}</div>
+            ) : (
+                <div className="row g-4">
+                  {products.map((product) => (
+                      <div key={product.id} className="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
+                        <div className="product-item text-center border h-100 p-4">
+                          <NavLink to={`/products/${product.id}`} className="d-block">
+                            <img className="img-fluid mb-4 product-image" src={`data:image/jpeg;base64,${product.image}`} alt={product.name} />
+                            <h6 className="h6 d-inline-block mb-2 text-decoration-none">{product.name}</h6>
+                            <h5 className="text-primary mb-3">{formatCurrency(product.price)}</h5>
+                            <NavLink to={`/products/${product.id}`} className="btn btn-outline-primary px-3">Mua Ngay</NavLink>
+                          </NavLink>
+                        </div>
                       </div>
-                      <a href="#" className="h6 d-inline-block mb-2">Sản Phẩm {idx + 1}</a>
-                      <h5 className="text-primary mb-3">$99.99</h5>
-                      <a href="#" className="btn btn-outline-primary px-3">Add To Cart</a>
-                    </div>
-                  </div>
-              ))}
-            </div>
+                  ))}
+                </div>
+            )}
           </div>
         </div>
 
