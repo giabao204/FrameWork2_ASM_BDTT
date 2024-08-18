@@ -74,7 +74,7 @@ const ProductsPage = () => {
       <div className="container-fluid p-0">
         <div className="container-fluid bg-success hero-header mb-5" style={{ padding: '50px 0' }}>
           <div className="container text-center">
-            <h1 className="display-4 text-white mb-3 animated slideInDown">Products</h1>
+            <h1 className="display-4 text-white mb-3 animated slideInDown">Sản Phẩm</h1>
           </div>
         </div>
         <div className="container-fluid py-5">

@@ -41,7 +41,7 @@ const AboutPage = () => {
         <div className="container">
           <div className="row g-5 align-items-center">
             <div className="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
-              <img className="img-fluid animated pulse infinite" src="img/shampoo-1.png" alt="Shampoo" />
+              <img className="img-fluid animated pulse infinite" src="images/anh-san-pham-2.jpg" alt="" />
             </div>
             <div className="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
             <h1 className="text-success mb-4">Sách Hay <span className="fw-light text-dark">Là Kho Tàng Tri Thức</span></h1>

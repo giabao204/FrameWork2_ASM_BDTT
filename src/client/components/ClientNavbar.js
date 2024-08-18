@@ -20,24 +20,24 @@ const ClientNavbar = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" className="ms-auto me-0" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto mx-auto">
-                <Nav.Link as={NavLink} to="/" className="nav-item nav-link text-white">Home</Nav.Link>
-                <Nav.Link as={NavLink} to="/about" className="nav-item nav-link text-white">About</Nav.Link>
-                <Nav.Link as={NavLink} to="/products" className="nav-item nav-link text-white">Products</Nav.Link>
-                <Nav.Link as={NavLink} to="/contact" className="nav-item nav-link text-white">Contact</Nav.Link>
+                <Nav.Link as={NavLink} to="/" className="nav-item nav-link text-white">Trang Chủ</Nav.Link>
+                <Nav.Link as={NavLink} to="/about" className="nav-item nav-link text-white">Giới Thiệu</Nav.Link>
+                <Nav.Link as={NavLink} to="/products" className="nav-item nav-link text-white">Sản Phẩm</Nav.Link>
+                <Nav.Link as={NavLink} to="/contact" className="nav-item nav-link text-white">Liên Hệ</Nav.Link>
               </Nav>
               <Nav className="ml-auto">
                 <Nav.Link as={NavLink} to="/admin" className="nav-item nav-link text-white">Admin</Nav.Link>
                 {isLoggedIn ? (
                     <Nav.Link as={NavLink} to="/profile" className="nav-item nav-link text-white">
-                      <FontAwesomeIcon icon={faUser} /> Profile
+                      <FontAwesomeIcon icon={faUser} /> Hồ Sơ
                     </Nav.Link>
                 ) : (
                     <Nav.Link as={NavLink} to="/login" className="nav-item nav-link text-white">
-                      <FontAwesomeIcon icon={faUser} /> Login
+                      <FontAwesomeIcon icon={faUser} /> Đăng Nhập
                     </Nav.Link>
                 )}
                 <Nav.Link as={NavLink} to="/cart" className="nav-item nav-link text-white">
-                  <FontAwesomeIcon icon={faShoppingCart} /> Cart
+                  <FontAwesomeIcon icon={faShoppingCart} /> Giỏ Hàng
                 </Nav.Link>
               </Nav>
             </Navbar.Collapse>
